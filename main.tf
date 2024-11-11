@@ -55,9 +55,11 @@ module "iam" {
 }
 ######################################################
 
-# module "aws_cloudwatch_log_group" {
-#   source = "./modules/aws_cloudwatch_log_group"
-# }
+######################################################
+module "aws_cloudwatch_log_group" {
+  source = "./modules/aws_cloudwatch_log_group"
+}
+######################################################
 
 # module "ecr" {
 #   source  = "./modules/ecr"
