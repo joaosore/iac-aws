@@ -1,0 +1,5 @@
+aws_region   = "us-east-1"
+instance_type = "t2.micro"
+example_env  = "value_for_my_env_variable"
+ami_id = "ami-0854d37d8d2491960"
+repository_name = "web-enviohub-frontend"
