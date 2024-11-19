@@ -22,7 +22,3 @@ variable "vpc_id" {
 #   value       = aws_lb_target_group.ecs_target_group.arn
 #   description = "ARN do Target Group para o Auto Scaling Group"
 # }
-
-# variable "ec2_internal_ids" {
-#   type = list(string)
-# }

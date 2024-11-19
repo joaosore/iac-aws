@@ -46,7 +46,6 @@ module "load_balancer" {
   security_group_id_public = module.security_group.security_group_id_public
   security_group_id_private = module.security_group.security_group_id_private
   vpc_id           = module.vpc.vpc_id
-  # ec2_internal_ids = module.autoscaling_group.ec2_internal_ids
 }
 
 ######################################################
@@ -68,21 +67,21 @@ module "aws_cloudwatch_log_group" {
 
 module "autoscaling_group" {
   source              = "./modules/autoscaling_group"
-  target_group_arn    = module.load_balancer.target_group_internal_arn
-  subnets             = module.subnet.private_subnet_ids
+  target_group_arn    = module.load_balancer.target_group_external_arn
+  subnets             = module.subnet.public_subnet_ids
   ami_id              = var.ami_id
   instance_type       = var.instance_type
-  security_group_ids  = [module.security_group.security_group_id_private]
+  security_group_ids  = [module.security_group.security_group_id_public]
   ecs_cluster_name    = module.ecs.cluster_name
 }
 
 module "ecs" {
   source                 = "./modules/ecs"
-  cluster_name           = "enviohub-cluster"
+  cluster_name           = "ec2-enviohub-cluster"
   execution_role_arn     = module.iam.ecs_task_execution_role_arn
-  subnets                = module.subnet.private_subnet_ids
-  security_group         = module.security_group.security_group_id_private
-  target_group_arn       = module.load_balancer.target_group_internal_arn
+  subnets                = module.subnet.public_subnet_ids
+  security_group         = module.security_group.security_group_id_public
+  target_group_arn       = module.load_balancer.target_group_external_arn
   autoscaling_group_arn  = module.autoscaling_group.ecs_autoscaling_group_arn
   ec2_internal_ips       = module.autoscaling_group.ec2_internal_ips
 }

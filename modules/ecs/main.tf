@@ -13,7 +13,7 @@ locals {
 
 resource "aws_ecs_task_definition" "ecs_task_1" {
   family                   = "proxyreverse-enviohub-task"
-  network_mode             = "bridge"  # Compatível com o tipo de instância EC2
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "128"
   memory                   = "128"
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "ecs_task_1" {
         }
       ],
       environment = [],
-      extraHosts = local.extra_hosts,
+      # extraHosts = local.extra_hosts,
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "ecs_task_1" {
 
 resource "aws_ecs_task_definition" "ecs_task_2" {
   family                   = "auth-enviohub-task"
-  network_mode             = "bridge"  # Compatível com o tipo de instância EC2
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "256"
@@ -93,7 +93,7 @@ resource "aws_ecs_task_definition" "ecs_task_2" {
         { name = "IV", value = "0a469869d275939db7a5f3ee7d6f3abe" },
         { name = "X_API_KEY", value = "8cd172e849ee2770cfa2e6eafcb0928dc7b6055e" }
       ],
-      extraHosts = local.extra_hosts,
+      # extraHosts = local.extra_hosts,
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -112,6 +112,11 @@ resource "aws_ecs_service" "ecs_service_1" {
   task_definition = aws_ecs_task_definition.ecs_task_1.arn
   desired_count   = 3
   launch_type     = "EC2"
+
+  network_configuration {
+    subnets         = var.subnets
+    security_groups = [var.security_group] 
+  }
 }
 
 resource "aws_ecs_service" "ecs_service_2" {
@@ -120,6 +125,11 @@ resource "aws_ecs_service" "ecs_service_2" {
   task_definition = aws_ecs_task_definition.ecs_task_2.arn
   desired_count   = 3
   launch_type     = "EC2"
+
+  network_configuration {
+    subnets         = var.subnets
+    security_groups = [var.security_group] 
+  }
 }
 
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
